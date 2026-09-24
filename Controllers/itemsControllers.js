@@ -7,6 +7,8 @@ exports.allItems = handlersFactory.getAll(Item);
 
 exports.getItem = handlersFactory.getOne(Item);
 
-exports.getItem = handlersFactory.getOne(Item);
+exports.addItem = handlersFactory.addOne(Item);
 
 exports.updateItem = handlersFactory.updateOne(Item);
+
+exports.deleteItem = handlersFactory.deleteOne(Item);
