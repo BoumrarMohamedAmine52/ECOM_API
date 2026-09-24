@@ -66,6 +66,13 @@ const userSchema = new mongoose.Schema(
     profilePhoto: {
       type: String,
     },
+    isSubscribed: {
+      type: Bololean,
+      default: false,
+    },
+    subscriptionExpDate: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
