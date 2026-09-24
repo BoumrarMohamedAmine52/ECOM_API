@@ -1,11 +1,11 @@
 const express = require("express");
-const soldControllers = require("../Controllers/soldsControllers");
+const soldControllers = require("../Controllers/soldControllers");
 
 const Router = express.Router();
 
-Router.get("/", soldControllers.allsolds);
+Router.get("/", soldControllers.allSolds);
 
-Router.post("/", soldControllers.addsold);
+Router.post("/", soldControllers.addSold);
 
 Router.get("/:id", soldControllers.getSold);
 
