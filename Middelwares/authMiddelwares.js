@@ -3,6 +3,8 @@ const asyncHandler = require("express-async-handler");
 const AppError = require("../Utils/appError");
 const jwt = require("jsonwebtoken");
 const promisify = require("utils");
+const sendEmail = require("../Utils/email");
+const crypto = require("crypto");
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -77,4 +79,73 @@ exports.protect = asyncHandler(async (req, res, next) => {
   req.user = user;
   req.user.id = decode.id;
   next();
+});
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return next(new AppError("Please provide ur email.", 400));
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(
+      new AppError("The user with that email, no longer exists.", 400),
+    );
+  }
+
+  const resetToken = user.createResetToken();
+
+  const url = `${req.protocol}://${req.get("host")}:${process.env.PORT}/api/v1/users/resetPassword/${resetToken}`;
+
+  const message = `U forgot ur password !, 
+  please send a PATCH request to this url : 
+  ${url}, with ur new password and confirm password, 
+  this request is only available for 10 min.`;
+
+  const emailOptions = {
+    email: user.email,
+    subject: "forgot password",
+    text: message,
+  };
+
+  try {
+    await sendEmail(emailOptions);
+
+    res.status(200).json({
+      status: "Success",
+      message: "the reset was sent to ur email.",
+    });
+  } catch (error) {
+    user.resetToken = undefined;
+    user.resetTokenExpAt = undefined;
+
+    await user.save({
+      validateBeforeSave: false,
+    });
+
+    return next(
+      new AppError("there was problem sending email, try again later.", 500),
+    );
+  }
+});
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const resetToken = crypto
+    .createHash("sha256")
+    .update(req.params.resetToken)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetToken: resetToken,
+    resetTokenExpAt: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError("The reset token has been expired.", 400));
+  }
+
+  if(!req.body.password || !req.body.passwordConfirm)
 });
