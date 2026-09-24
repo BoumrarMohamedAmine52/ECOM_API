@@ -8,7 +8,7 @@ Router.get("/", cartItemControllers.allCartItems);
 Router.post("/", cartItemControllers.addCartItem);
 
 Router.route("/:id")
-  .get(cartItemControllers.getcartItem)
+  .get(cartItemControllers.getCartItem)
   .patch(cartItemControllers.updateCartItem)
   .delete(cartItemControllers.deleteCartItem);
 
