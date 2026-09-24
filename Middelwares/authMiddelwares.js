@@ -2,7 +2,7 @@ const User = require("../Models/userModel");
 const asyncHandler = require("express-async-handler");
 const AppError = require("../Utils/appError");
 const jwt = require("jsonwebtoken");
-const promisify = require("utils");
+const { promisify } = require("utils");
 const sendEmail = require("../Utils/email");
 const crypto = require("crypto");
 
@@ -147,5 +147,22 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     return next(new AppError("The reset token has been expired.", 400));
   }
 
-  if(!req.body.password || !req.body.passwordConfirm)
+  if (!req.body.password || !req.body.passwordConfirm) {
+    return next(new AppError("please provide ur new passwords", 400));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+
+  user.resetToken = undefined;
+  user.resetTokenExpAt = undefined;
+
+  await user.save();
+
+  res.status(201).json({
+    status: "Success",
+    data: {
+      user,
+    },
+  });
 });
