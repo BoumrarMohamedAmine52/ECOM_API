@@ -9,6 +9,6 @@ exports.getBid = handlersFactory.getOne(Bid);
 
 exports.addBid = handlersFactory.addOne(Bid);
 
-exports.updateBid = handlersFactory.updateOne(Bid);
+//exports.updateBid = handlersFactory.updateOne(Bid);
 
 exports.deleteBid = handlersFactory.deleteOne(Bid);

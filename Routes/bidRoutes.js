@@ -1,5 +1,5 @@
 const express = require("express");
-const bidControllers = require("../Controllers/cartItemControllers");
+const bidControllers = require("../Controllers/bidControllers");
 
 const Router = express.Router();
 
@@ -9,7 +9,6 @@ Router.post("/", bidControllers.addBid);
 
 Router.route("/:id")
   .get(bidControllers.getBid)
-  .patch(bidControllers.updateBid)
   .delete(bidControllers.deleteBid);
 
 module.exports = Router;
