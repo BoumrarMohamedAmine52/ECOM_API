@@ -2,6 +2,7 @@ const User = require("../Models/userModel");
 const asyncHandler = require("express-async-handler");
 const AppError = require("../Utils/appError");
 const jwt = require("jsonwebtoken");
+const promisify = require("utils");
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -46,4 +47,34 @@ exports.signUp = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.protect = asyncHandler(async (req, res, next) => {});
+exports.protect = asyncHandler(async (req, res, next) => {
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    return next(new AppError("Ur not loged in, please log in.", 401));
+  }
+
+  const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  const user = await User.findById(decode.id);
+
+  if (!user) {
+    return next(new AppError("the user belonging to that token", 401));
+  }
+
+  if (user.changedPassword(decode.iat)) {
+    return next(
+      new AppError("the password have been changed, please log in again.", 401),
+    );
+  }
+
+  req.user = user;
+  req.user.id = decode.id;
+  next();
+});

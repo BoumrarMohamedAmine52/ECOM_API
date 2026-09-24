@@ -29,6 +29,9 @@ const userSchema = new mongoose.Schema(
       },
       select: false,
     },
+    passwordChangedDate: {
+      type: Date,
+    },
     resetToken: {
       type: String,
     },
@@ -80,6 +83,17 @@ userSchema.methods.isCorrectPassword = async function (
   userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPassword = function (timestamps) {
+  if (!this.passwordChangedDate) return false;
+
+  const passwordChangedDateInSeconds = parseInt(
+    this.passwordChangedDate.getTime() / 1000,
+    10,
+  );
+
+  return passwordChangedDateInSeconds > timestamps;
 };
 
 const User = mongoose.model("User", userSchema);
