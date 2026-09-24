@@ -96,4 +96,10 @@ userSchema.methods.changedPassword = function (timestamps) {
   return passwordChangedDateInSeconds > timestamps;
 };
 
+userSchema.pre("save", function () {
+  if (!this.isModified("password") || this.isNew) return;
+
+  this.passwordChangedDate = Date.now() - 1;
+});
+
 const User = mongoose.model("User", userSchema);
