@@ -1,6 +1,7 @@
 const express = require("express");
 const itemControllers = require("../Controllers/itemsControllers");
 const authMiddelwares = require("../Middelwares/authMiddelwares");
+const Item = require("../Models/itemModel");
 
 const Router = express.Router();
 
@@ -17,9 +18,14 @@ Router.route("/:id")
   .get(itemControllers.getItem)
   .patch(
     authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Item, "user"),
     itemControllers.setUpdateFields,
     itemControllers.updateItem,
   )
-  .delete(authMiddelwares.protect, itemControllers.deleteItem);
+  .delete(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Item, "user"),
+    itemControllers.deleteItem,
+  );
 
 module.exports = Router;

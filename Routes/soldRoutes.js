@@ -7,7 +7,7 @@ const Router = express.Router();
 Router.get("/", soldControllers.allSolds);
 
 Router.post(
-  "/:seller-:item",
+  "/",
   authMiddelwares.protect,
   soldControllers.setSoldFIelds,
   soldControllers.addSold,

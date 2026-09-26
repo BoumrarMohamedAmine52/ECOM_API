@@ -5,8 +5,8 @@ const handlersFactory = require("../Controllers/handlersFactory");
 
 exports.setSoldFIelds = (req, res, next) => {
   req.body.buyer = req.body.buyer || req.user.id;
-  req.body.item = req.body.item || req.params.item;
-  req.body.seller = req.body.seller || req.params.seller;
+  req.body.item = req.body.item || req.query.item;
+  req.body.seller = req.body.seller || req.query.seller;
 };
 
 exports.allSolds = handlersFactory.getAll(Sold);

@@ -1,6 +1,7 @@
 const express = require("express");
 const wichListItemControllers = require("../Controllers/wichlistitemControllers");
 const authMiddelwares = require("../Middelwares/authMiddelwares");
+const Wichlistitem = require("../Models/wichListModel");
 
 const Router = express.Router();
 
@@ -14,7 +15,15 @@ Router.post(
 );
 
 Router.route("/:id")
-  .get(authMiddelwares.protect, wichListItemControllers.getWichlistitem)
-  .delete(authMiddelwares.protect, wichListItemControllers.deleteWichlistitem);
+  .get(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Wichlistitem, "user"),
+    wichListItemControllers.getWichlistitem,
+  )
+  .delete(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Wichlistitem, "user"),
+    wichListItemControllers.deleteWichlistitem,
+  );
 
 module.exports = Router;

@@ -17,9 +17,14 @@ Router.route("/:id")
   .get(feedbackControllers.getFeedback)
   .patch(
     authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(feedbackControllers, "by"),
     feedbackControllers.setFeedbackUpdate,
     feedbackControllers.updateFeedback,
   )
-  .delete(authMiddelwares.protect, feedbackControllers.deleteFeedback);
+  .delete(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(feedbackControllers, "by"),
+    feedbackControllers.deleteFeedback,
+  );
 
 module.exports = Router;

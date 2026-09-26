@@ -9,6 +9,7 @@ Router.route("/:id")
   .get(userControllers.getUser)
   .patch(
     authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(User, "_id"),
     userControllers.setUpdateFields,
     userControllers.updateUser,
   );
@@ -16,6 +17,7 @@ Router.route("/:id")
 Router.patch(
   "/deActive/:id",
   authMiddelwares.protect,
+  authMiddelwares.restrictToOwnerOnly(User, "_id"),
   userControllers.setIsActiveUser,
   userControllers.deActivateUser,
 );

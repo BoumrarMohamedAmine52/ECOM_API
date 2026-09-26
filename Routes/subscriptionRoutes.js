@@ -9,6 +9,7 @@ Router.get("/", subscriptionControllers.allSubscriptions);
 Router.post(
   "/",
   authMiddelwares.protect,
+  subscriptionControllers.setSubscription,
   subscriptionControllers.addSubscription,
 );
 

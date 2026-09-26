@@ -1,6 +1,7 @@
 const express = require("express");
 const cartItemControllers = require("../Controllers/cartItemControllers");
 const authMiddelwares = require("../Middelwares/authMiddelwares");
+const Cartitem = require("../Models/cartItemModel");
 
 const Router = express.Router();
 
@@ -14,12 +15,21 @@ Router.post(
 );
 
 Router.route("/:id")
-  .get(cartItemControllers.getCartItem)
+  .get(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Cartitem, "user"),
+    cartItemControllers.getCartItem,
+  )
   .patch(
     authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Cartitem, "user"),
     cartItemControllers.setUpdateFields,
     cartItemControllers.updateCartItem,
   )
-  .delete(authMiddelwares.protect, cartItemControllers.deleteCartItem);
+  .delete(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Cartitem, "user"),
+    cartItemControllers.deleteCartItem,
+  );
 
 module.exports = Router;

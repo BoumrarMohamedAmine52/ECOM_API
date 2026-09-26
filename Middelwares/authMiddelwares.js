@@ -81,6 +81,25 @@ exports.protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
+exports.restrictToOwnerOnly = (Model, ownerField) => {
+  return asyncHandler(async (req, res, next) => {
+    const doc = await Model.findById(req.params.id);
+
+    if (!doc) {
+      return next(new AppError(`Document not found.`, 400));
+    }
+
+    const OwnerId = doc[ownerField];
+
+    if (OwnerId || req.user.id.toString() !== OwnerId.toString()) {
+      return next(
+        new AppError(`You do not have permission to perform this action.`, 403),
+      );
+    }
+    next();
+  });
+};
+
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
 

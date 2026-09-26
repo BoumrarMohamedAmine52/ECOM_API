@@ -1,6 +1,7 @@
 const express = require("express");
 const bidControllers = require("../Controllers/bidControllers");
 const authMiddelwares = require("../Middelwares/authMiddelwares");
+const Bid = require("../Models/bidModel");
 
 const Router = express.Router();
 
@@ -15,6 +16,10 @@ Router.post(
 
 Router.route("/:id")
   .get(authMiddelwares.protect, bidControllers.getBid)
-  .delete(authMiddelwares.protect, bidControllers.deleteBid);
+  .delete(
+    authMiddelwares.protect,
+    authMiddelwares.restrictToOwnerOnly(Bid, "user"),
+    bidControllers.deleteBid,
+  );
 
 module.exports = Router;
