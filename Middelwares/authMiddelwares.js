@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const { promisify } = require("utils");
 const sendEmail = require("../Utils/email");
 const crypto = require("crypto");
+const Sold = require("../Models/soldModel");
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -99,6 +100,20 @@ exports.restrictToOwnerOnly = (Model, ownerField) => {
     next();
   });
 };
+
+exports.restrictToSellerBuyerOnly = asyncHandler(async (req, res, next) => {
+  const sold = await Sold.findById(req.params.id);
+
+  if (
+    !(req.user.id.toString() === sold.seller.toString()) && // not seller => !(false) = true.
+    !(req.user.id.toString() === sold.buyer.toString()) // then  not buyer => !(false) = true /// and false && false = false
+  ) {
+    return next(
+      new AppError(`U do not have permission to view this sold item.`, 403),
+    );
+  }
+  next();
+});
 
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;

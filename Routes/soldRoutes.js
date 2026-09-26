@@ -13,6 +13,11 @@ Router.post(
   soldControllers.addSold,
 );
 
-Router.get("/:id", authMiddelwares.protect, soldControllers.getSold);
+Router.get(
+  "/:id",
+  authMiddelwares.protect,
+  authMiddelwares.restrictToSellerBuyerOnly,
+  soldControllers.getSold,
+);
 
 module.exports = Router;
