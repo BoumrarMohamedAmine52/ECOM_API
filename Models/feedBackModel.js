@@ -6,11 +6,11 @@ const feedBackSchema = new mongoose.Schema({
     ref: "User",
     required: [true, "a feedback must be by user."],
   },
-  to: {
-    type: mongoose.Schema.ObjectId,
-    ref: "User",
-    required: [true, "a feedback must to user."],
-  },
+  // to: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: "User",
+  //   required: [true, "a feedback must to user."],
+  // },
   item: {
     type: mongoose.Schema.ObjectId,
     ref: "Item",

@@ -52,6 +52,10 @@ const itemSchema = new mongoose.Schema(
     subCategorie: {
       type: String,
     },
+    photos: {
+      type: [String],
+      required: [true, "the item must have photos."],
+    },
     sellingPrice: {
       type: String,
     },
