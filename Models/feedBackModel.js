@@ -20,4 +20,13 @@ const feedBackSchema = new mongoose.Schema({
     type: String,
     required: [true, "the feedback must not be empty."],
   },
+  feedbackRating: {
+    type: String,
+    required: [true, "a feedback must have a rating."],
+    enum: {
+      values: ["Positive", "Neutral", "Negative"],
+      message:
+        "a feedback rating must be either Positive or Neutral, Negative.",
+    },
+  },
 });

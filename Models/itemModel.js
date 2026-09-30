@@ -54,7 +54,7 @@ const itemSchema = new mongoose.Schema(
     },
     photos: {
       type: [String],
-      required: [true, "the item must have photos."],
+      // required: [true, "the item must have photos."],
     },
     sellingPrice: {
       type: String,
@@ -67,6 +67,13 @@ const itemSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+itemSchema.virtual("inCarts", {
+  ref: "CartItem",
+  foreignField: "item",
+  localField: "_id",
+  count: true,
+});
 
 const Item = mongoose.model("Item", itemSchema);
 

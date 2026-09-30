@@ -20,6 +20,8 @@ Router.route("/:id")
     authMiddelwares.protect,
     authMiddelwares.restrictToOwnerOnly(Item, "user"),
     itemControllers.setUpdateFields,
+    itemControllers.uploadItemPhotos,
+    itemControllers.resizeItemPhotos,
     itemControllers.updateItem,
   )
   .delete(

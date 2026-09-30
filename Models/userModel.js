@@ -72,6 +72,8 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true }, // Ensures virtuals show up when converted to JSON
+    toObject: { virtuals: true },
   },
 );
 
@@ -119,4 +121,39 @@ userSchema.methods.createResetToken = function () {
   return resetToken;
 };
 
+userSchema.virtual("items", {
+  ref: "Item",
+  foreignField: "user",
+  localField: "_id",
+});
+
+userSchema.virtual("soldItems", {
+  ref: "Sold",
+  foreignField: "seller",
+  localField: "_id",
+});
+
+userSchema.virtual("totalFeedbacks", {
+  ref: "Feedback",
+  foreignField: "to",
+  localField: "_id",
+  count: true,
+});
+
+userSchema.virtual("positiveFeedbacks", {
+  ref: "Feedback",
+  foreignField: "to",
+  localField: "_id",
+  count: true,
+  match: { feedbackRating: "Positive" },
+});
+
+userSchema.pre("findById", function () {
+  this.populate(["items", "soldItems", "totalFeedbacks", "positiveFeedbacks"]);
+});
+
+userSchema.virtual("positiveFeedbacksPerc").get(function () {
+  if (this.totalFeedbacks === 0) return 0;
+  return `${(this.positiveFeedbacks / this.totalFeedbacks) * 100}%`;
+});
 const User = mongoose.model("User", userSchema);
