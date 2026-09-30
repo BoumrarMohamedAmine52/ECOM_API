@@ -11,6 +11,8 @@ Router.route("/:id")
     authMiddelwares.protect,
     authMiddelwares.restrictToOwnerOnly(User, "_id"),
     userControllers.setUpdateFields,
+    userControllers.uploadProfilePhoto,
+    userControllers.resizeProfilePhoto,
     userControllers.updateUser,
   );
 

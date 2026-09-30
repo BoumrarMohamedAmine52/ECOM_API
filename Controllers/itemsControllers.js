@@ -32,6 +32,7 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+/// this middelware puts the photos in array req.files.photos .
 exports.uploadItemPhotos = upload.array("photos", 5);
 
 exports.resizeItemPhotos = asyncHandler(async (req, res, next) => {

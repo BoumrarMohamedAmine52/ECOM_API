@@ -2,6 +2,8 @@ const User = require("../Models/userModel");
 const asyncHandler = require("express-async-handler");
 const AppError = require("../Utils/appError");
 const handlersFactory = require("../Controllers/handlersFactory");
+const multer = require("multer");
+const sharp = require("sharp");
 
 exports.setUpdateFields = (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
@@ -18,6 +20,42 @@ exports.setIsActiveUser = (req, res, next) => {
   };
   next;
 };
+
+const multerStorage = multer.memoryStorage;
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimeType.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("not an image, please upload only images."), 400);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadProfilePhoto = upload.single("profilePhoto");
+
+exports.resizeProfilePhoto = asyncHandler(async (req, res, next) => {
+  if (!req.files.profilePhoto) return next();
+
+  await Promise.all(
+    req.files.profilePhoto.map(async (file, i) => {
+      const fileName = `user-${req.user.id}-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(200, 200)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`public/images/users/${fileName}`);
+
+      req.body.profilePhoto = fileName;
+    }),
+  );
+  next();
+});
 
 exports.allUsers = handlersFactory.getAll(User);
 
