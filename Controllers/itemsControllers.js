@@ -4,6 +4,7 @@ const Item = require("../Models/itemModel");
 const handlersFactory = require("../Controllers/handlersFactory");
 const multer = require("multer");
 const sharp = require("sharp");
+const ApiFeature = require("../Utils/apiFeature");
 
 exports.setUserId = (req, res, next) => {
   req.body.user = req.body.user || req.user.id;
@@ -56,7 +57,20 @@ exports.resizeItemPhotos = asyncHandler(async (req, res, next) => {
   next();
 });
 
-exports.allItems = handlersFactory.getAll(Item);
+exports.allItems = asyncHandler(async (req, res, next) => {
+  const itemsObj = new ApiFeature(Item.find(), req.query);
+
+  const items = itemsObj.filter().sort().fields().pagination();
+
+  await items;
+
+  res.status(200).json({
+    status: "Success",
+    data: {
+      items,
+    },
+  });
+});
 
 exports.getItem = handlersFactory.getOne(Item);
 
